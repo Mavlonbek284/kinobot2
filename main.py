@@ -76,13 +76,18 @@ def tekshir_callback(call):
     else:
         bot.answer_callback_query(call.id, "❌ Hali obuna bo‘lmagansiz.")
 
-# === Faqat admin fayl ID olishi mumkin ===
-@bot.message_handler(content_types=['video'])
-def video_qabul(message):
+# === Admin uchun file_id chiqaruvchi funksiya ===
+@bot.message_handler(content_types=['video', 'document'])
+def get_file_id(message):
     if message.from_user.id == ADMIN_ID:
-        bot.send_message(message.chat.id, f"📽 file_id: `{message.video.file_id}`", parse_mode="Markdown")
+        if message.content_type == 'video':
+            file_id = message.video.file_id
+            bot.reply_to(message, f"🎬 Video file_id:\n`{file_id}`", parse_mode='Markdown')
+        elif message.content_type == 'document':
+            file_id = message.document.file_id
+            bot.reply_to(message, f"📁 Document file_id:\n`{file_id}`", parse_mode='Markdown')
     else:
-        bot.send_message(message.chat.id, "❌ Kechirasiz, faqat admin fayl ID olishi mumkin.")
+        bot.reply_to(message, "❌ Siz admin emassiz.")
 
 # === Statistika komandasi (faqat admin uchun) ===
 @bot.message_handler(commands=['stat'])
